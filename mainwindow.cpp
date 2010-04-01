@@ -39,7 +39,7 @@ void MainWindow::newGame()
 
 void MainWindow::sendMove()
 {
-	ui->board->makeMove(notationEdit->text());
+	ui->board->makeNotationMove(notationEdit->text());
 }
 
 void MainWindow::setStatus(const QString& status)

@@ -71,51 +71,5 @@ void Square::dropEvent(QDropEvent *e)
 	// get source square
 	Square* s = qobject_cast<Square*>(e->source());
 
-	// uncheck
-	s->click();
-	s->repaint();
-
-	// return on a teamkill try
-	if((board->whites().contains(s->text().toUtf8().toBase64()) &&
-	    board->whites().contains(this->text().toUtf8().toBase64()))
-	|| (board->blacks().contains(s->text().toUtf8().toBase64()) &&
-	    board->blacks().contains(this->text().toUtf8().toBase64())))
-		{
-			return;
-		}
-
-	// check if we're moving our piece
-	if((board->white_turn && !board->whites().contains(s->text().toUtf8().toBase64()))
-	|| (!board->white_turn && !board->blacks().contains(s->text().toUtf8().toBase64())))
-		{
-			return;
-		}
-
-	// remove piece
-	s->setText("");
-
-	// capture?
-	QString sign = this->text().isEmpty() ? "-" : "x";
-
-	// set new
-	this->setText(e->mimeData()->text());
-
-	QListWidget* l = board->notationList;
-
-	// notation
-	if(board->white_turn)
-	{
-		QString number = QString::number( l->count()+1 );
-		l->addItem( number + ". " + s->position() + sign + this->position() );
-	} else
-	{
-		QListWidgetItem* lastItem = l->item(l->count()-1);
-		QString text = lastItem->text();
-		lastItem->setText( text + " " + s->position() + sign + this->position() );
-	}
-
-	board->new_game = false;
-
-	// update status
-	board->changeTurn();
+	board->makeMove(s, this);
 }

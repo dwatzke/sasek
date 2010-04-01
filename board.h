@@ -34,14 +34,12 @@ private:
 	QListWidget *notationList;
 
 	void init();
+	void makeMove(Square* source, Square* dest);
+	void makeNotationMove(const QString &notation);
 
 private slots:
 	void rotateBoard();
 	void setRotationEnabled(bool);
-
-//public slots:
-	// make a move as per notation
-	void makeMove(const QString &notation);
 
 signals:
 	void setStatus(QString);

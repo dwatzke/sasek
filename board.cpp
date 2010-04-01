@@ -195,9 +195,61 @@ void Board::rotateBoard()
 	this->white_view = !this->white_view;
 }
 
-void Board::makeMove(const QString &notation)
+void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 {
-	qDebug() << "making move:" << notation;
+	// uncheck hack
+	s->click();
+	s->repaint();
+
+	// return on a teamkill try
+	if((this->whites().contains(s->text().toUtf8().toBase64()) &&
+	    this->whites().contains(d->text().toUtf8().toBase64()))
+	|| (this->blacks().contains(s->text().toUtf8().toBase64()) &&
+	    this->blacks().contains(d->text().toUtf8().toBase64())))
+		{
+			return;
+		}
+
+	// check if we're moving our pieceboard
+	if((this->white_turn && !this->whites().contains(s->text().toUtf8().toBase64()))
+	||(!this->white_turn && !this->blacks().contains(s->text().toUtf8().toBase64())))
+		{
+			return;
+		}
+
+	// capture?
+	QString sign = d->text().isEmpty() ? "-" : "x";
+
+	// set new piece
+	d->setText(s->text());
+
+	// remove old piece
+	s->setText("");
+
+	// just to make it shorter and clearer
+	QListWidget* l = this->notationList;
+
+	// notation
+	if(this->white_turn)
+	{
+		QString number = QString::number( l->count()+1 );
+		l->addItem( number + ". " + s->position() + sign + d->position() );
+	} else
+	{
+		QListWidgetItem* lastItem = l->item( l->count()-1 );
+		QString text = lastItem->text();
+		lastItem->setText( text + " " + s->position() + sign + d->position() );
+	}
+
+	this->new_game = false;
+
+	// update status
+	this->changeTurn();
+}
+
+void Board::makeNotationMove(const QString &notation)
+{
+	qDebug() << "making move (not yet implemented):" << notation;
 }
 
 void Board::changeTurn()
