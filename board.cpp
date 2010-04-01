@@ -33,7 +33,7 @@ Board::Board(QWidget *parent)
 	this->changeTurn();
 
 	this->setStyleSheet("Square { font-size:50px; font-weight:bold; text-align: top center; }"
-			    "QLabel { font-size: 20px; }");
+			    "QLabel { font-size:20px; }");
 
 	this->setFixedSize(this->sizeHint());
 }
@@ -220,6 +220,9 @@ void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 	// capture?
 	QString sign = d->text().isEmpty() ? "-" : "x";
 
+	// move notation
+	QString move = s->pieceLetter() + s->position() + sign + d->position();
+
 	// set new piece
 	d->setText(s->text());
 
@@ -233,12 +236,12 @@ void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 	if(this->white_turn)
 	{
 		QString number = QString::number( l->count()+1 );
-		l->addItem( number + ". " + s->position() + sign + d->position() );
+		l->addItem( number + ". " + move );
 	} else
 	{
 		QListWidgetItem* lastItem = l->item( l->count()-1 );
 		QString text = lastItem->text();
-		lastItem->setText( text + " " + s->position() + sign + d->position() );
+		lastItem->setText( text + " " + move );
 	}
 
 	this->new_game = false;

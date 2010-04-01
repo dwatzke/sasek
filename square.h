@@ -22,13 +22,14 @@ public:
 protected:
 	void mousePressEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
-	void dragEnterEvent(QDragEnterEvent *);
-	void dropEvent(QDropEvent *);
+	void dragEnterEvent(QDragEnterEvent *e);
+	void dropEvent(QDropEvent *e);
 
 private:
 	Board *board;
 	QPoint dragStartPosition;
 
+	QString pieceLetter();
 	QString position();
 };
 
