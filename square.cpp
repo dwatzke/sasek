@@ -94,20 +94,24 @@ void Square::dropEvent(QDropEvent *e)
 	// remove piece
 	s->setText("");
 
+	// capture?
+	QString sign = this->text().isEmpty() ? "-" : "x";
+
 	// set new
 	this->setText(e->mimeData()->text());
 
 	QListWidget* l = board->notationList;
 
+	// notation
 	if(board->white_turn)
 	{
 		QString number = QString::number( l->count()+1 );
-		l->addItem( number + ". " + s->position() + "-" + this->position() );
+		l->addItem( number + ". " + s->position() + sign + this->position() );
 	} else
 	{
 		QListWidgetItem* lastItem = l->item(l->count()-1);
 		QString text = lastItem->text();
-		lastItem->setText( text + " " + s->position() + "-" + this->position() );
+		lastItem->setText( text + " " + s->position() + sign + this->position() );
 	}
 
 	board->new_game = false;
