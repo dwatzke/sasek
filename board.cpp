@@ -155,6 +155,7 @@ void Board::init()
 	}
 
 	notationList = new QListWidget();
+	notationList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	notationList->setFixedWidth(150);
 	layout->addWidget(notationList, 0, 10, 10, 1);
 }
@@ -201,21 +202,29 @@ void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 	s->click();
 	s->repaint();
 
+	QByteArray st = s->text().toUtf8().toBase64();
+	QByteArray dt = d->text().toUtf8().toBase64();
+
 	// return on a teamkill try
-	if((this->whites().contains(s->text().toUtf8().toBase64()) &&
-	    this->whites().contains(d->text().toUtf8().toBase64()))
-	|| (this->blacks().contains(s->text().toUtf8().toBase64()) &&
-	    this->blacks().contains(d->text().toUtf8().toBase64())))
+	if((this->whites().contains(st) &&
+	    this->whites().contains(dt))
+	|| (this->blacks().contains(st) &&
+	    this->blacks().contains(dt)))
 		{
 			return;
 		}
 
 	// check if we're moving our pieceboard
-	if((this->white_turn && !this->whites().contains(s->text().toUtf8().toBase64()))
-	||(!this->white_turn && !this->blacks().contains(s->text().toUtf8().toBase64())))
+	if((this->white_turn && !this->whites().contains(st))
+	||(!this->white_turn && !this->blacks().contains(st)))
 		{
 			return;
 		}
+
+	// cannot capture the king ya fool
+	// TODO: render this check useless (implement mate detection)
+	if(dt == this->whites().at(5) || dt == this->blacks().at(5))
+		return;
 
 	// capture?
 	QString sign = d->text().isEmpty() ? "-" : "x";
