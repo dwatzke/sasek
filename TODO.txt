@@ -1,0 +1,11 @@
+* move checking
+	* pawn (done except e.p.)
+	* knight
+	* bishop
+	* rook
+	* queen
+	* king
+* castling
+* pawn promoting
+* check and would-be-check detection
+* mate detection

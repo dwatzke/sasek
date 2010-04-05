@@ -21,6 +21,7 @@
 #include <QPoint>
 
 class Board;
+class Piece;
 class QMouseEvent;
 class QDragEnterEvent;
 class QDragMoveEvent;
@@ -30,10 +31,11 @@ class Square : public QPushButton
 {
 Q_OBJECT
 
-friend class Board;
+	friend class Board;
+	friend class Piece;
 
 public:
-	explicit Square(QString text, QWidget *parent = 0);
+	explicit Square(QString text, Piece *piece = 0, QWidget *parent = 0);
 
 protected:
 	void mousePressEvent(QMouseEvent *e);
@@ -43,10 +45,19 @@ protected:
 
 private:
 	Board *board;
+	Piece *m_piece;
 	QPoint dragStartPosition;
 
-	QString pieceLetter();
+	bool isFree();
+	QString getPosition(QString id, Square *s = 0);
+	Piece *piece() { return m_piece; };
+	//QString pieceLetter();
 	QString position();
+	QByteArray text64()
+	{
+		return this->text().toUtf8().toBase64();
+	}
+	void setPiece(Piece *piece);
 };
 
 #endif

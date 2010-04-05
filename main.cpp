@@ -15,15 +15,24 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 #include <QApplication>
+#include <QLocale>
 #include <QTextCodec>
+#include <QTranslator>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
+	a.setApplicationName("sasek");
+	a.setOrganizationDomain("watzke.cz");
 
 	QTextCodec *unicode = QTextCodec::codecForName("UTF-8");
 	QTextCodec::setCodecForCStrings(unicode);
+	QTextCodec::setCodecForTr(unicode);
+
+	QTranslator t;
+	t.load(a.applicationName() + "_" + QLocale::system().name());
+	a.installTranslator(&t);
 
 	MainWindow w;
 	w.show();

@@ -19,7 +19,7 @@
 
 #include <QWidget>
 
-class MainWindow;
+class QGridLayout;
 class QListWidget;
 class Square;
 
@@ -29,29 +29,28 @@ Q_OBJECT
 
 	friend class MainWindow;
 	friend class Square;
+	//friend class Piece;
 
 public:
 	Board(QWidget *parent = 0);
-	~Board();
-
-	const QStringList whites() { return m_whites; }
-	const QStringList blacks() { return m_blacks; }
-	void changeTurn();
 
 private:
-	MainWindow *window;
+	QGridLayout* layout;
 	bool new_game;
 	bool want_rotation;
 	bool white_view;
 	bool white_turn;
-	bool rochade_possible;
-	QStringList m_whites;
-	QStringList m_blacks;
+	QList<QByteArray> whites;
+	QList<QByteArray> blacks;
 	QListWidget *notationList;
+	Square *squareAt(QString position);
 
 	void init();
-	void makeMove(Square* source, Square* dest);
+	bool isValidMove(Square *source, Square *dest);
+	void makeMove(Square *source, Square *dest);
 	void makeNotationMove(const QString &notation);
+
+	void changeTurn();
 
 private slots:
 	void rotateBoard();
@@ -59,7 +58,6 @@ private slots:
 
 signals:
 	void setStatus(QString);
-	//void turnChanged();
 };
 
 #endif // BOARD_H
