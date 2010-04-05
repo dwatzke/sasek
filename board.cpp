@@ -50,7 +50,7 @@ Board::Board(QWidget *parent)
 	changeTurn();
 
 	setStyleSheet("Square { font-size:50px; font-weight:bold; text-align: top center; }"
-			    "QLabel { font-size:20px; }");
+		      "QLabel { font-size:20px; }");
 
 	setFixedSize(sizeHint());
 }
@@ -215,6 +215,41 @@ void Board::rotateBoard()
 	white_view = !white_view;
 }
 
+void Board::checkGameStatus(Square *square)
+{
+	int row = QString(square->position()[1]).toInt();
+	// pawn-promotion
+	if(!square->isFree() && square->piece()->number() == Piece::Pawn && (row == 1 || row == 8))
+	{
+		int new_piece = Piece::Queen;
+		QInputDialog dialog;
+		dialog.setStyleSheet("QLabel { font-size:medium; }");
+		QStringList list;
+		list << tr("Queen") << tr("Knight") << tr("Rook") << tr("Bishop");
+		QString sel = dialog.getItem(this, tr("Pawn promotion"), tr("Select a piece to promote your pawn:"), list, 0, false);
+
+		if(sel == tr("Queen"))
+			new_piece = Piece::Queen;
+		else if(sel == tr("Knight"))
+			new_piece = Piece::Knight;
+		else if(sel == tr("Rook"))
+			new_piece = Piece::Rook;
+		else if(sel == tr("Bishop"))
+			new_piece = Piece::Bishop;
+
+		Piece *op = square->piece();
+		Piece *np = new Piece(new_piece, white_turn);
+		square->setPiece(np);
+		delete op;
+
+		// append promotion info to the notation
+		QListWidget* l = notationList;
+		QListWidgetItem* lastItem = l->item( l->count()-1 );
+		QString text = lastItem->text();
+		lastItem->setText( text + np->letter() );
+	}
+}
+
 bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
 {
 	Piece *sp = s->piece();
@@ -229,7 +264,7 @@ bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
 		return false;
 
 	// cannot capture the king
-	if(dp && dp->letter() == "K")
+	if(dp && dp->number() == Piece::King)
 		return false;
 
 	// not your turn amigo
@@ -268,7 +303,6 @@ bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
 		sq = squareAt(p);
 		if(sq && !sq->isFree())
 			vd << p;
-
 		break;
 
 	default:
@@ -292,7 +326,7 @@ void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 		return;
 
 	// capture?
-	QString sign = d->piece() ? "x" : "-";
+	QString sign = d->isFree() ? "-" : "x";
 
 	// move notation
 	QString move = s->piece()->letter() + s->position() + sign + d->position();
@@ -302,6 +336,9 @@ void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 
 	// remove old piece
 	s->setPiece(0);
+
+	// check game status (check, mate, pawn promotion, maybe castling)
+	checkGameStatus(d);
 
 	// just to make it shorter and clearer
 	QListWidget* l = notationList;

@@ -6,6 +6,6 @@
 	* queen
 	* king
 * castling
-* pawn promoting
 * check and would-be-check detection
 * mate detection
+* error reporting (why a move was denied, etc.)

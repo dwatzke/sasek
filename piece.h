@@ -22,7 +22,7 @@ private:
 	bool can_000;
 	bool m_white;
 	bool ep_endangered;
-	bool m_moved;
+	int m_moved;
 	int m_piece;
 	Square* square;
 

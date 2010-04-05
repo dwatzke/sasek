@@ -8,7 +8,7 @@ Piece::Piece(int piece, bool white)
 	can_000 = true;
 	m_white = white;
 	ep_endangered = false;
-	m_moved = false;
+	m_moved = 0;
 	m_piece = piece;
 
 	letters << "" << tr("N", "knight") << tr("B", "bishop") << tr("R", "rook") << tr("Q", "queen") << tr("K", "king");

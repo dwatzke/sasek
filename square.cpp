@@ -108,6 +108,7 @@ QString Square::position()
 	return col+row;
 }
 
+// use only when moving a piece
 void Square::setPiece(Piece *piece)
 {
 	m_piece = piece;
@@ -126,9 +127,9 @@ void Square::setPiece(Piece *piece)
 	else
 		text = board->blacks[no];
 
-	piece->m_moved = true;
-
 	this->setText(QByteArray::fromBase64(text.toUtf8()));
+
+	piece->m_moved++;
 }
 
 void Square::mousePressEvent(QMouseEvent *e)

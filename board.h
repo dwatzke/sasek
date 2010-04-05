@@ -46,6 +46,7 @@ private:
 	Square *squareAt(QString position);
 
 	void init();
+	void checkGameStatus(Square* lastActiveSquare);
 	bool isValidMove(Square *source, Square *dest);
 	void makeMove(Square *source, Square *dest);
 	void makeNotationMove(const QString &notation);
