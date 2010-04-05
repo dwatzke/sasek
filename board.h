@@ -43,10 +43,10 @@ private:
 	QList<QByteArray> whites;
 	QList<QByteArray> blacks;
 	QListWidget *notationList;
-	Square *squareAt(QString position);
+	Square *squareAt(const QString &position);
 
 	void init();
-	void checkGameStatus(Square* lastActiveSquare);
+	void checkGameStatus(Square* source, Square* dest, const QString &sign);
 	bool isValidMove(Square *source, Square *dest);
 	void makeMove(Square *source, Square *dest);
 	void makeNotationMove(const QString &notation);

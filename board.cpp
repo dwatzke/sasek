@@ -49,8 +49,8 @@ Board::Board(QWidget *parent)
 	init();
 	changeTurn();
 
-	setStyleSheet("Square { font-size:50px; font-weight:bold; text-align: top center; }"
-		      "QLabel { font-size:20px; }");
+	setStyleSheet("Square { font-size:50px; font-weight:bold; text-align: top center; } "
+		      "QLabel#axis { font-size:20px; }");
 
 	setFixedSize(sizeHint());
 }
@@ -68,18 +68,22 @@ void Board::init()
 	for(int y=1, x=8; y<=8 && x>=1; y++, x--)
 	{
 		QLabel* w = new QLabel(QString(y+96));
+		w->setObjectName("axis");
 		w->setStyleSheet("margin-left: 1.2em;");
 		layout->addWidget(w, 0, y);
 
 		w = new QLabel(QString(y+96));
+		w->setObjectName("axis");
 		w->setStyleSheet("margin-left: 1.2em;");
 		layout->addWidget(w, 9, y);
 
 		w = new QLabel(QString::number(x));
+		w->setObjectName("axis");
 		w->setStyleSheet("margin-right: 0.3em;");
 		layout->addWidget(w, y, 0);
 
 		w = new QLabel(QString::number(x));
+		w->setObjectName("axis");
 		w->setStyleSheet("margin-left: 0.3em;");
 		layout->addWidget(w, y, 9);
 	}
@@ -215,15 +219,15 @@ void Board::rotateBoard()
 	white_view = !white_view;
 }
 
-void Board::checkGameStatus(Square *square)
+void Board::checkGameStatus(Square* source, Square *dest, const QString &sign)
 {
-	int row = QString(square->position()[1]).toInt();
+	int row = QString(dest->position()[1]).toInt();
 	// pawn-promotion
-	if(!square->isFree() && square->piece()->number() == Piece::Pawn && (row == 1 || row == 8))
+	if(!dest->isFree() && dest->piece()->number() == Piece::Pawn && (row == 1 || row == 8))
 	{
 		int new_piece = Piece::Queen;
 		QInputDialog dialog;
-		dialog.setStyleSheet("QLabel { font-size:medium; }");
+		//dialog.setStyleSheet("QLabel { font-size:medium; }");
 		QStringList list;
 		list << tr("Queen") << tr("Knight") << tr("Rook") << tr("Bishop");
 		QString sel = dialog.getItem(this, tr("Pawn promotion"), tr("Select a piece to promote your pawn:"), list, 0, false);
@@ -237,9 +241,9 @@ void Board::checkGameStatus(Square *square)
 		else if(sel == tr("Bishop"))
 			new_piece = Piece::Bishop;
 
-		Piece *op = square->piece();
+		Piece *op = dest->piece();
 		Piece *np = new Piece(new_piece, white_turn);
-		square->setPiece(np);
+		dest->setPiece(np);
 		delete op;
 
 		// append promotion info to the notation
@@ -248,6 +252,9 @@ void Board::checkGameStatus(Square *square)
 		QString text = lastItem->text();
 		lastItem->setText( text + np->letter() );
 	}
+
+	// en passant
+	//if()
 }
 
 bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
@@ -279,7 +286,7 @@ bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
 
 	switch(sp->number())
 	{
-	case Piece::Pawn:
+	case Piece::Pawn: {
 		// one step forward
 		p = s->getPosition("T");
 		sq = squareAt(p);
@@ -292,19 +299,31 @@ bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
 		if(sq && sq->isFree() && !sp->hasMoved())
 			vd << p;
 
+		// left e.p.
+		p = s->getPosition("L");
+		sq = squareAt(p);
+		// left e.p. possible?
+		bool lep = !sq->isFree() && sq->piece()->ep_endangered;
+
 		// left-capture
 		p = s->getPosition("TL");
 		sq = squareAt(p);
-		if(sq && !sq->isFree())
+		if(sq && (!sq->isFree() || lep))
 			vd << p;
+
+		// right e.p.
+		p = s->getPosition("R");
+		sq = squareAt(p);
+		// right e.p. possible?
+		bool rep = !sq->isFree() && sq->piece()->ep_endangered;
 
 		// right-capture
 		p = s->getPosition("TR");
 		sq = squareAt(p);
-		if(sq && !sq->isFree())
+		if(sq && (!sq->isFree() || rep))
 			vd << p;
 		break;
-
+	    }
 	default:
 		break;
 	}
@@ -337,9 +356,6 @@ void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 	// remove old piece
 	s->setPiece(0);
 
-	// check game status (check, mate, pawn promotion, maybe castling)
-	checkGameStatus(d);
-
 	// just to make it shorter and clearer
 	QListWidget* l = notationList;
 
@@ -355,6 +371,9 @@ void Board::makeMove(Square *s /*source*/, Square *d /*destination*/)
 		lastItem->setText( text + " " + move );
 	}
 
+	// check game status (check, mate, pawn promotion, maybe castling)
+	checkGameStatus(s, d, sign);
+
 	new_game = false;
 
 	changeTurn();
@@ -365,7 +384,7 @@ void Board::makeNotationMove(const QString &notation)
 	qDebug() << "making move (not yet implemented):" << notation;
 }
 
-Square *Board::squareAt(QString position)
+Square *Board::squareAt(const QString &position)
 {
 	Square* square;
 
