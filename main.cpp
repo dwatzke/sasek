@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
 	a.setApplicationName("sasek");
 	a.setOrganizationDomain("watzke.cz");
 
-	QTextCodec *unicode = QTextCodec::codecForName("UTF-8");
-	QTextCodec::setCodecForCStrings(unicode);
-	QTextCodec::setCodecForTr(unicode);
+	//QTextCodec *unicode = QTextCodec::codecForName("UTF-8");
+	//QTextCodec::setCodecForCStrings(unicode);
+	//QTextCodec::setCodecForTr(unicode);
 
 	QTranslator t;
 	t.load(a.applicationName() + "_" + QLocale::system().name());

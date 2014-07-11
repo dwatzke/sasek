@@ -18,6 +18,7 @@
 #include "ui_mainwindow.h"
 
 #include <QtGui>
+#include <QtWidgets>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),

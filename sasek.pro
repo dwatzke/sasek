@@ -1,6 +1,11 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-03-26T18:44:55
 # -------------------------------------------------
+
+QT       += core gui
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 TARGET = sasek
 TEMPLATE = app
 SOURCES += main.cpp \

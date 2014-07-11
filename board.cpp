@@ -20,6 +20,7 @@
 #include "mainwindow.h"
 
 #include <QtGui>
+#include <QtWidgets>
 
 Board::Board(QWidget *parent)
     : QWidget(parent)
@@ -303,7 +304,9 @@ bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
 		p = s->getPosition("L");
 		sq = squareAt(p);
 		// left e.p. possible?
-		bool lep = !sq->isFree() && sq->piece()->ep_endangered;
+		bool lep = false;
+		if (!sq->isFree() && sq->piece()->ep_endangered)
+			lep = true;
 
 		// left-capture
 		p = s->getPosition("TL");
@@ -315,7 +318,9 @@ bool Board::isValidMove(Square *s /*source*/, Square *d /*destination*/)
 		p = s->getPosition("R");
 		sq = squareAt(p);
 		// right e.p. possible?
-		bool rep = !sq->isFree() && sq->piece()->ep_endangered;
+		bool rep = false;
+		if (sq && (!sq->isFree() && sq->piece()->ep_endangered))
+			rep = true;
 
 		// right-capture
 		p = s->getPosition("TR");

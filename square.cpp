@@ -19,6 +19,7 @@
 #include "board.h"
 
 #include <QtGui>
+#include <QtWidgets>
 
 Square::Square(QString text, Piece* xpiece, QWidget *parent)
 	: QPushButton(text, parent)
@@ -63,7 +64,7 @@ QString Square::getPosition(QString id, Square *s)
 
 	qDebug() << "starting position:" << d;
 
-	int col = (int)d[0].toAscii();
+	int col = (int)d[0].toLatin1();
 	int row = QString(d[1]).toInt();
 
 	int up = board->white_turn ? 1 : -1;
